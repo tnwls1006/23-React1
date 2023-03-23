@@ -3,7 +3,8 @@
 # 23-React1
 ---
 ## 4주차 (3/23)
-우라라랄
+### 프로젝트 생성
+* npx create-react-app 'name'
 
 
 ---
