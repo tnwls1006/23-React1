@@ -6,8 +6,7 @@
 ### 프로젝트 생성
 * npx create-react-app 'name'
 
-* config --global user.name "abc"
-* config --global user.email "abc@gamil.com"
+
 
 
 ---
