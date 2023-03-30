@@ -36,6 +36,125 @@
   - Props -> 리액트 컴포넌트 -> 리액트 엘리먼트
 - 엘리먼트를 필요한 만큼 만들어 사용한다는 면에서 객체 지향의 개념과 비슷
 
+### Props 의 개념
+- props는 prop(property: 속성, 특성)의 준말
+- 컴포넌트의 속성
+- 어떤 속성, props를 넣느냐에 따라 속성이 다른 엘리먼트가 출력
+- 컴포넌트에 전달 할 다양한 정보를 담고 있는 자바스크립트 객체
+- ex) 에어비앤비
+
+### Props의 특징
+- 읽기 전용, 변경 X
+- 속성이 다른 엘리먼트를 생성하려면 새로운 props를 컴포넌트에 전달
+
+### Pure vs Impure 함수
+- Pure 함수 : 인수로 받은 정보가 함수 내부에서도 변하지 않는 함숫
+- Impure 함수 : 인수로 받은 정보가 함수 내부에서 변하는 함수
+
+### Props 사용법
+- JSX 에서는 key-value 쌍으로 구성
+```jsx
+function APP(props){
+  return(
+    <Profile
+    name="소플"
+    introduction = "안녕하세요, 소플입니다"
+    viewCount={1500}
+    />
+  );
+}
+```
+1. App 컴포넌트에서 props로 인자를 받아
+2. 내부 profile컴포넌트로 전달해서 name,introduction,viewCount에 각각 속성을 할당
+3. 전달되는 props는 다음과 같은 자바스크립트 객체
+```js
+{
+  name: "소플",
+  introduction: "안녕하세요, 소플입니다"
+  viewCount: 1500
+}
+```
+
+### 컴포넌트만들기
+1. 컴포넌트의 종류
+- 리액트 초기 버전을 사용할 때 클래스형 컴포넌트를 주로 사용
+- Hook이라는 개념이 나오면서 최근엔 함수형 컴포넌트를 주로 사용
+- 예전에 작성된 코드나 문서들이 클래스형 컴포넌트를 사용하기 떄문에,
+  클래스형 컴포넌트와 컴포넌트의 생명주기에 관해서도 공부해두어야 한다
+
+2. 함수형 컴포넌트
+- props중 name 키의 값을 "안녕"뒤에 넣어 반환
+```jsx
+  function Welcome(props){
+    return <h1>안녕, {props.name}</h1>;
+  }
+```
+
+3. 클래스형 컴포넌트
+- React.Component classs로 부터 상속을 받아 선언
+```jsx
+class Welcome extends React:Component{
+  render(){
+    return <h1>안녕, {this.props.name}</h1>;
+  }
+}
+```
+
+4. 컴포넌트 이름 짓기
+- 이름은 항상 대문자로 시작
+  - 소문자로 시작하면 DOM 태그로 인식
+- 컴포넌트 파일 이름과 컴포넌트 이름은 같게
+
+5. 컴포넌트의 랜더링
+```jsx
+ function Welcome(props){
+    return <h1>안녕, {props.name}</h1>;
+  }
+const element = <Welcome nme="인제" />;
+ReactDOM.render(
+  element,
+  document.getElementById('root')
+);
+```
+
+### 컴포넌트 합상
+- 여러 개의 컴포넌트를 합쳐서 하나의컴포넌트를 만드는 것
+- 리액트에서는 컴포넌트 안에 또 다른 컴포넌트를 사용할 수 있기 때문에, 복잡한 화면을 여러 개의 컴포넌트로 나누어 구현할 수 있습니다
+- props의 값을 다르게 해서 Welcome 컴포넌ㄴ트르 ㄹ여러번 사용
+```jsx
+ function Welcome(props){
+    return <h1>안녕, {props.name}</h1>;
+  }
+  function App(props){
+    return (
+      <div>
+      <Welcome name="Mike" />
+      <Welcome name="Steve" />
+      <Welcome name="Jane" />
+      </div>
+    )
+  }
+ReactDOM.render(
+  <App />
+  document.getElementById('root')
+);
+```
+
+### 컴포넌트의 추출
+- 큰 컴포넌트에서 일부를 추출해서 새로운 컴포넌트를 만드는 것
+  - Comment 댓글 표시 컴포넌트
+  - 내부에선 이미지, 이름, 댓글과 장성일 포함
+  - 이미지 부분을 Avatar 컴포넌트로 추출
+```jsx
+  function Avatar(props){
+    return (
+      <img className="avatar"
+        src={props.user.avatarUrl}
+        alt={props.user.name}
+      />
+    );
+  }
+```
 
 ---
 ## 4주차 (3/23)
