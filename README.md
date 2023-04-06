@@ -29,7 +29,7 @@
 * 랜더링이 끝나면 conponentDinUpdate() 함수 호출
 * 마지막으로 언마운트 되면 conpomentWillUnmount() 함수 호출
 
-### <State와 생명주기 함수 사용 실습>
+### <State와 생명주기 함수 사용 실습, developer tool 설치>
 
 ---
 ## 5주차 (3/30)
