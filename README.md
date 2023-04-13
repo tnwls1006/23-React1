@@ -136,8 +136,40 @@ function Counter(props) {
 }
 ```
 
-```
+- 두개의 useEffect()를 사용하는 코드
 
+```jsx
+function() UserStatusWithCounter(props){
+  const [count, setCount] = useState(0);
+  useEffect(()=> {
+    document.title=`총 ${count}번 클릭했습니다.`;
+  });
+
+  const[ isOnline, setIsOnline] = useState(null);
+  useEffect(() =>{
+    ServerAPI.subscribeUserStatus(props.user.id, handleStatusChange);
+    return () => {
+      ServerAPI.unsubscribeUserStatus(props.user.id, handleStatusChange);
+    };
+  });
+
+  function handleStatusChange(Status){
+    setIsOnline(status.isOnline);
+  }
+}
+
+/*
+useEffect(() => {
+  //컴포넌트가 마운트 된 이후,
+  // 의존성 배열에 있는 변수들 중 하나라도 값이 변경되었을 때 실행됨
+  // 의존성 배열에 빈 배열([])을 넣으면 마운트와 언마운트시에 단 한 번씩ㅁ나 실행됨
+  // 의존성 배열 생략 시 컴포넌트 업데이트 시마다 실행됨.
+
+  return () => {
+    // 컴포넌트가 마운트 해제되기 전에 실행
+  }
+}, [의존성 변수1, 의존성 변수2...]);
+*/
 ```
 
 ### useMemo
@@ -176,7 +208,12 @@ const memoizedValue = useMemo(
 - useMemo와 마찬가지고 의존성 배열 중 하나라도 변경되면 콜백함수를 반환
 
 ```jsx
-
+const memoizedCallback = useCallback(
+  () => {
+    doSomething(의존성 변수1, 의존성 변수2);
+  },
+  [의존성 변수1, 의존성 변수2]
+);
 ```
 
 ### useRef
@@ -186,8 +223,23 @@ const memoizedValue = useMemo(
 - 레퍼런스 객체를 반환한다
 - 레퍼런스 객체에는 .current라는 속성이 있는데, 이것은 현재 참조하고 있는 엘리먼트를 의미한다
 
-```
+```jsx
  [ const refContainer = useRef(초깃값) ]
+
+ function TextInputWithFocusButton(props){
+  const inputElem = useRef(null);
+
+  const onButtonClick = () => {
+    // 'current'는 마운트된 input element를 가리킹
+    inputElem.current.focus();
+  };
+  return(
+    <>
+      <input ref={inputElem} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+ }
 ```
 
 - 반환된 레퍼런스 객체는 컴포넌트의 라이프타임 전체에 걸쳐서 유지된다.
@@ -203,6 +255,15 @@ const memoizedValue = useMemo(
 
 ```jsx
 // pg. 224 code
+function MyComponent(props){
+  const [name, setName] = useState('Inje');
+
+  if(name !== ' '){
+    useEffect(() =>{
+      ...
+    });
+  }
+}
 ```
 
 - 두번째 규칙, 리액트 함수 컴포넌트에서만 훅을 호출해야 한다.
@@ -215,8 +276,49 @@ const memoizedValue = useMemo(
 
 ```jsx
 // pg.226 code는 userStatus 컴포넌트
+import React, { useState, useEffect } from "react";
+
+function UseStatus(props) {
+  const [inOnline, setIsOnline] = useState(null);
+
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+
+    ServerAPI.subscribeUserStatus(props.user.id, handleStatusChange);
+    return () => {
+      ServerAPI.unsubscribeUserStatus(props.user.id, handleStatusChange);
+    };
+  });
+
+  if (isOnline === null) {
+    return "대기중...";
+  }
+  return isOnlin ? "온라인" : "오프라인";
+}
 
 //pg. 227 code는 userListItem 컴포넌트
+import React, { useState, useEffect } from "react";
+
+function UseListItem(props) {
+  const [inOnline, setIsOnline] = useState(null);
+
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+
+    ServerAPI.subscribeUserStatus(props.user.id, handleStatusChange);
+    return () => {
+      ServerAPI.unsubscribeUserStatus(props.user.id, handleStatusChange);
+    };
+  });
+
+  return (
+    <li style={{ color: isOnline ? "green" : "black" }}>{props.user.name}</li>
+  );
+}
 ```
 
 2. 커스텀 훅을 추출하기
@@ -228,18 +330,51 @@ const memoizedValue = useMemo(
 ```jsx
 //pg. 228 code
 // 중복된 로직을 useUserStatus()라는 커스텀 훅으로 추출해낸것
+import { useState, useEffect } from "react";
 
-/* 주의점
+function UseListItem(userId) {
+  const [inOnline, setIsOnline] = useState(null);
+
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+
+    ServerAPI.subscribeUserStatus(props.user.id, handleStatusChange);
+    return () => {
+      ServerAPI.unsubscribeUserStatus(props.user.id, handleStatusChange);
+    };
+  });
+
+  return isOnline;
+}
+```
+
 - 다른 훅을 호출하는 것은 커스텀 훅의 최상위 레벨에서만 가능
 - 일반함수와 같다고 생각해도 됨
 - 이름이 use로 시작하도록 한다는 것만 다름
-*/
-```
 
 3. 커스텀 훅 사용하기
 
 ```jsx
 //pg. 230 code
+
+function UserStatus(props) {
+  const isOnline = useUserStatus(props.user.id);
+
+  if (isOnline === null) {
+    return "대기중 ...";
+  }
+  return isOnline ? "온라인" : "오프라인";
+}
+
+function UserListItem(props) {
+  const isOnline = useUserStatus(props.user.id);
+
+  return (
+    <li style={{ color: isOnline ? "green" : "black" }}>{props.user.name}</li>
+  );
+}
 ```
 
 ## 실습 <훅을 사용한 컴포넌트 개발>
