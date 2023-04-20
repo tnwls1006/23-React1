@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 
 function Midterm(props){
-  const [fruits, setFruits] = useState(['apple','orange','banana']);
+  const [fruits, applebtn, orangebtn, bananabtn] = useState();
 
   const handleClick = ()=>{
-    console.log(fruits);
-
+    applebtn = fruits("사과");
+    orangebtn = fruits("오렌지");
+    bananabtn = fruits("바나나");
   }
 
 
 return (
   <div>
     <p>{`어떤 과일을 좋아하나요? ${fruits}`}</p>
-    <button onClick={setFruits} >사과</button>
-    <button onClick={setFruits}>오렌지</button>
-    <button onClick={setFruits}>바나나</button>
+    <button onClick={applebtn} >사과</button>
+    <button onClick={orangebtn}>오렌지</button>
+    <button onClick={bananabtn}>바나나</button>
   </div>
 );
 }
