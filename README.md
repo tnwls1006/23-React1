@@ -21,7 +21,23 @@
     * 클래스 컴포넌트는 이제 거의 사용하지 않기 때문에 참고만.
 ```jsx
 function Toggle(props){
+  const [isToggleOn, setIsToggleOn] = useState(true);
 
+  // 방법 1. 함수 안에 함수로 정의
+  function handleClick(){
+    setIsToggleOn((isToggleOn) => !isToggleOn);
+  }
+
+  // 방법 2. arrow function을 사용하여 정의
+  const handleClick = () => {
+    setIsToggleOn((isToggleOn) => !isToggleOn);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      {isToggleOn ? "켜짐" : "꺼짐"}
+    </button>
+  );
 }
 
 // 함수형에서 이벤트 핸들러를 정의하는 방법은 두 가지 이다.
@@ -33,8 +49,8 @@ function Toggle(props){
   함수를 사용할 떄는 Argument 혹은 인자라고 부른다
 - 이벤트 핸들러에 매개변수를 전달해야 하는 경우도 많다.
 ```jsx
-1. <buttton onClick ={(event) => this.}>
-2.
+<buttton onClick ={(event) => this.deleteItem(id,event)}>삭제 </button>
+<button oncClick={this.deleteItem.bind(this, id)}>삭제하기</button>
 ```
 - 동일한 역할을 하지만 하나는 화살표 함수, 다른 하나는 bind를 사용
 - event라는 매개변수는 리액트의 이벤트 객체를 의미
@@ -43,7 +59,15 @@ function Toggle(props){
   두 번째 코드는 id이후 두번째 매개변수로 event가 자동 전달
 
 ``` jsx 
-// p.254 함수형 컴포넌트에서 이벤트 핸들러에 매개변수를 전달할 때
+// 함수형 컴포넌트에서 이벤트 핸들러에 매개변수를 전달할 때
+function MyButton(props){
+  const handleDelete = (id, event) => {
+    console.log(id, event.target);
+  };
+  return (
+    <button onClick={(event) => handleDelete(1,event)}>삭제하기</button>
+  );
+}
 
 ```
 
@@ -66,7 +90,32 @@ function Greeting(props){
 ### 엘리먼트 변수
 - 엘리먼트 변수 :  렌더링해야 될 컴포넌트를 변수처럼 사용하는 방법
 ```jsx
-// p.272 code -> state에 따라 button변수에 컴포넌트의 객체를 저장하여 return문에서 사용
+// state에 따라 button변수에 컴포넌트의 객체를 저장하여 return문에서 사용
+function LoginControl(porps){
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLoginClick=() => {
+    setIsLoggedIn(true);
+  }
+
+  const handleLogOutClick=() => {
+    setIsLoggedIn(false);
+  }
+
+  let button;
+  if(isLoggedIn) {
+    button = <LogoutButton onClick={handleLogoutClick} />;
+  } else {
+    button = <LoginButton onClick={handleLoginClick} />;
+  }
+
+  return (
+    <div>
+      <Greeting isLoggedIn = {isLoggedIn} />
+      {button}
+    </div>
+  );
+}
 
 ```
 
@@ -83,29 +132,69 @@ function Greeting(props){
 ``` jsx
 // 문자열
 function UserStatus(props){
-
-}
-
-// 엘리먼트
-function LoginControl(props){
-
-  
-  return (
+  return(
     <div>
-      <Greeting isLoggedIn = {isLoggedIn} />
-
-
+      이 사용자는 현재 <b>{props.isLoggedIn ? '로그인' : '로그인하지 않은'}<b> 상태입니다.
     </div>
   )
 }
 ```
 
+``` jsx
+// 엘리먼트
+function LoginControl(props){
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLoginClick() => {
+    setIsLoggedIn(true);
+  }
+
+  const handleLogoutClick = () => {
+    setIsLoggedIn(false);
+  }
+  
+  return (
+    <div>
+      <Greeting isLoggedIn = {isLoggedIn} />
+      {isLoggedIn 
+      ? <LogoutButton onClick = {handleLogoutClick} /> 
+      : <LoginButton onClick = {handleLoginClick} />}
+    </div>
+  )
+}
+
+```
+
 ### 컴포넌트 렌더링 막기
 - 컴포넌트 렌더링하고 싶지 않을 때에는 null을 리턴
 ``` jsx
-// p.277 code
+function MainPage(props) {
+  const [showWarning, setShowWarning] = useState(false);
+
+  const handledToggleClick = () => {
+    setShowWarning(prevShowWarning => !prevShowWarning); 
+  }
+
+  return (
+    <div>
+      <WarningBanner warning = {showWarning} />
+      <button onClick={handleToggleClick}>
+        {showWarning ? '감추기' : '보이기'}
+      </button>
+    </div>
+  )
+}
 ```
 
+### chapter 10
+### 리스트와 키
+
+- 리스트 : 목록
+  - 배열 : 리스트를 사용하기 위한 자료구조
+    - 배열 : js의 변수나 객체를 하나의 변수로 묶어놓은 것
+- 리스트 : 자료형 없음
+  - ex) 파이썬 : 배열 존재X, 리스트 O
+  
 ---
 
 ## 8주차 (중간고사 4/20)
