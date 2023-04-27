@@ -4,6 +4,8 @@
 
 ## 9주차 (4/27)
 
+### Chapter 08
+
 ### 이벤트 처리하기
 1. DOM에서 클릭 이벤트 처리
 2. React에서 클릭 이벤트 처리
@@ -44,6 +46,66 @@ function Toggle(props){
 // p.254 함수형 컴포넌트에서 이벤트 핸들러에 매개변수를 전달할 때
 
 ```
+
+### Chapter 09
+
+### 조건부 렌더링
+- 조건 : 조건문의 조건
+``` jsx
+function Greeting(props){
+  const isLoggedIn = props.isLoggedIn;
+  if(isLoggedIn){
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+```
+- props로 전달 받은 isLoggedln이 true이면 <UserGreeting />을, false면 <GuestGreeting />을 return
+  <br>이과 같은 렌더링을 조건부 렌더링이라 한다.
+
+### 엘리먼트 변수
+- 엘리먼트 변수 :  렌더링해야 될 컴포넌트를 변수처럼 사용하는 방법
+```jsx
+// p.272 code -> state에 따라 button변수에 컴포넌트의 객체를 저장하여 return문에서 사용
+
+```
+
+### 인라인 조건
+- 필요한 곳에 조건문을 직접 넣어 사용하는 방버
+1. 인라인 if
+  - if문을 사직접 사용하지 않고, 동일한 효과를 내기 위해 && 논리 연산자를 사용
+  - &&는 and연산자로 모든 조건이 참일때만 참이 된다
+  - 단축평가 : 첫 조건이 거짓이면 두번째 조건은 판단할 필요가 없다
+
+2. 인라인 if-else
+  - 삼항 연산자를 사용한다. [ 조건문 ? 참일 경우 : 거짓일 경우 ]
+  - 문자열이나 엘리먼트를 넣어서 사용할 수 있다.
+``` jsx
+// 문자열
+function UserStatus(props){
+
+}
+
+// 엘리먼트
+function LoginControl(props){
+
+  
+  return (
+    <div>
+      <Greeting isLoggedIn = {isLoggedIn} />
+
+
+    </div>
+  )
+}
+```
+
+### 컴포넌트 렌더링 막기
+- 컴포넌트 렌더링하고 싶지 않을 때에는 null을 리턴
+``` jsx
+// p.277 code
+```
+
 ---
 
 ## 8주차 (중간고사 4/20)
