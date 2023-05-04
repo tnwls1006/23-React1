@@ -2,6 +2,376 @@
 
 # 23-React1
 
+---
+
+## 10주차 (5/4)
+
+### Chapter 10
+
+1. 리스트와 키란?
+    - 리스트 : 자바스크립트의 변수나 객체를 하나의 변수로 묶어 놓은 배열
+    - 키 : 각 객체나 아이템을 구분할 수 있는 고유한 값
+    - 리액트에선 배열과 키를 사용하는 반복되는 다수의 엘리먼트를 쉽게 렌더링할 수 있다
+2. 여러 개의 컴포넌트 렌더링
+    - 예로 에어비엔비 화면처럼 같은 컴포넌트를 화면에 반복적으로 나타내야 할 경우 배열에 들어 있는 엘리먼트를 map()함수를 이용하여 렌더링
+``` jsx
+// numbers 배열에 들어있는 각 요소를 map()를 이용하여 하나씩 추출해서 2를 곱하여 doubled 배열에 다시 넣는 코드
+const doubled = numbers.map((number) => number * 2)
+
+// 리액트에서 map()를 사용한 예제
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) => 
+    <li>{number}</li>
+  );
+ReactDOM.render(
+  <ul>{listItems}</ul>,
+  document.getElememtById('root')
+);
+```
+
+3. 기본적인 리스트 컴포넌트
+``` jsx
+// P.294 code
+
+```
+
+4. 리스트와 키에 대해 알아보기
+    - 리스트에서 키는 "리스트에서 아이템을 구별하기 위한 고유한 문자열"
+    - 키는 리스트에서 어떤 아이템을 변경, 추가 또는 제거되었는지 구분하기 위해 사용
+    - 키는 같은 리스트에 있는 엘리먼트 사이에서만 고유한 값이면 된다.
+```jsx
+// 키값으로 숫자의 값을 사용하는 방식
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) =>
+  <li key = {number.toString()}>
+    {number}
+  </li>
+  );
+
+// 키값으로 id를 사용하는 방식
+const todoItems = todos.map((todo) =>
+  <li key={todo.id}>
+    {todo.text}
+  </li>
+);
+
+// 키값으로 인덱스를 사용하는 방법
+// 리액트에서는 키를 명시적으로 넣어 주지 않으면 기본적으로 이 인덱스 값을 키값으로 사용
+const todoItems = todos.map((todo, index) =>
+  // 아이템들의 고유한 ID가 없을 경우에만 사용해야 함
+  <li key={index}>
+    {todo.text}
+  </li>
+);
+```
+
+5. 실습 <출석부 출력하기>
+``` jsx
+return 
+  // id를 키 값으로 사용
+    <li key={student.id}>{student.name}</li>;
+  
+  // 포맷팅 된 문자열을 키값으로 사용
+     /*
+      {students.map((student, index) =>{
+        <li key={`student-id-${student.id`}>{studendt.name}</li>;
+      })}
+     */
+       
+   // 배열의 인덱스를 키값으로 사용
+     /*
+      {students.map((student, index) =>{
+        <li key={index}>{student.name}</li>;
+      })}
+    */
+```
+
+### Chapter 11
+
+1. 폼(form) 이란?
+    - 폼(form) : 사용자로부터 입력을 받기 위해 사용하는 것
+    - 리액트와 HTML의 폼은 차이가 있다
+      - 리액트는 컴포넌트 내부에서는 state를 통해 데이터를 관리
+      - HTML 폼은 엘리먼트 내부에 각각의 state가 존재
+
+2. 제어 컴포넌트
+    - 제어 컴포넌트 : 사용자가 입력한 값에 접근하고 제어할 수 있도록 해주는 컴포넌트
+      - 그 값이 리액트의 통제를 받는 입력 폼 엘리먼트를 의미.
+``` jsx
+  // HTML 폼을 리액트 제어 컴포넌트로 만든 것
+function NameForm(props) {
+  const [value, setValue] = useState('');
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  }
+  /* 
+  사용자가 입력한 모든 알파벳을 대문자로 변셩시켜서 관리하려면
+  
+  const handleChange = (event) => {
+    setValue(event.target.value.toUpperCase());
+  }
+  
+  이벤트의 타겟 값을 toUpperCase()함수를 사용하여 모두 대문자로 변경한 뒤, 그 값을 state에 저장
+  */
+
+  const handleSubmit = (event) => {
+    alert('입력한 이름: ' +value);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        이름 : 
+          <input type="text" value={value} onChange={handleChange} />
+        </label>
+        <button type="submit">제출</button>
+      </form>
+  )
+}
+```
+
+3. textare 태그
+  - HTML에서는 children으로 텍스트가 들어가는 형태
+```html
+  <textarea>
+      안녕하세요, 여기에 이렇게 텍스트가 들어가게 됩니다.
+  </textarea>
+```
+  - 리액트에선 state를 통해 태그의 value라는 attribute를 변경하여 텍스트를 표시
+```jsx
+function RequestForm(props) {
+  const [value, setValue] = useState('요청사항을 입력하세요.');
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  }
+
+  const handleSubmit = (event) => {
+    alert('입력한 요청사항: '+ value);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        요청사항 :
+          <textarea value={value} onChange={handleChange} />
+      </label>
+      <button type="submit">제출</button>
+    </form>
+  )
+}
+```
+
+4. select 태그
+  - select 태그는 드롭다운을 보여주기 위한 HTML 태그
+```html
+<select>
+  <option value="apple">사과</option>
+  <option value="banana">바나나나</option>
+  <option selected value="grape">포도</option>
+  <option value="watermelon">수박</option>
+</select>
+```
+
+```jsx
+function FruitSelect(props){
+  const [value, setValue] = useState('grape');
+
+  const handleChane = (event) =>{
+    setValue(event.target.value);
+  }
+
+  const handleSubmit = (event) =>{
+    alert('선택한 과일 : '+value);
+    event.preventDefault();
+  }
+
+  return(
+    <form onSubmit ={handleSubmit}>
+      <label>
+        과일을 선택하세요:
+        <select value={value} onChange={handleChange}>
+          <option value="apple">사과</option>
+          <option value="banana">바나나나</option>
+          <option value="grape">포도</option>
+          <option value="watermelon">수박</option>
+        </select>
+      </label>
+      <button type="submit">제출</button>
+    </form>
+  )
+}
+
+// 다중 선택 
+  <select multiple={true} value={['B', 'C']}>
+```
+
+5. File input 태그
+  - File input 태그는 그 값이 읽기 전용이기 때문에 리액트에서는 비제어 컴포넌트가 된다.
+```html 
+  <input type="file" />
+<!-- 보통은 서버로 파일을 업로드하거나 자바스크립트의 File API를 사용해 파일을 다룰 때 사용 -->
+```
+
+6. 여러 개의 입력 다루기
+  - File input 태그는 그 값이 읽기 전용이기 때문에 리액트에서는 비제어 컴포넌트가 된다.
+```jsx
+function Reservation(props){
+  const [haveBreakfast, setHaveBreakfast] = useState(true);
+  const [numberOfGuest, setNumberOfGuest] = useState(2);
+
+  const handleSubmit = (event) =>{
+    alert(`아침식사 여부 : ${haveBreakfast}, 방문객 수 : ${numberOfGuest}`);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSumbmit}>
+      <label>
+        아침식사 여부 :
+        <input
+          type="checkbox"
+          checked={haveBreakfast}
+          onChange={(event) =>{
+            setHaveBreakfast(event.target.checked);
+          }} />
+        </label>
+        <br />
+
+        <label>
+          방문객 수:
+          <input
+            type="number"
+            value={numberOfGuest}
+            onChange={(event) => {
+              setNumberOfGuest(event.target.value);
+            }} />
+          </label>
+          <button type="submit">제출</button>
+        </form>
+  );
+}
+```
+
+7. Input Null Value
+  - 제어 컴포넌트 : value prop을 정해진 값으로 넣으면 코드를 수정하지 않는 한 입력값을 바꿀 수 없다
+    - 만약 value prop은 넣되 자유롭게 입력할 수 있게 만들고 싶다면 값에 undefined 또는 null을 넣으면 된다
+``` jsx
+  ReactDOM.render(<input value="hi" />, rootNode);
+
+  setTimeout(function() {
+    ReactDOM.render(<input value={null} />, rootNode);
+  }, 1000);
+// 값이 hi로 정해져 있어 바꿀 수 없는 입력 불가 상태였다가 timer에 의해 1초 뒤에 value가 null인 <input> 태그가 렌더링되면서 입력 가능한 상태로 바뀐다.
+```
+
+8. 실습 <사용자 정보 입력받기>
+
+## Chapter 12
+
+1. Shared State
+    - Shared State : 어떤 컴포넌트의 state에 있는 데이터를 여러 개의 하위 컴포넌트에서 공통적으로 사용하는 경우
+      - 자식 컴포넌트들이 가장 가까운 공통된 부모 컴포넌트의 state를 공유해 사용
+
+2. 하위 컴포넌트에서 State 공유하기
+  - 사용자로부터 온도를 입력받아서 각각 섭씨온도와 화씨온도로 표현해 주고 해당 온도에서 물이 끓는지 안 끓는지는 출력해 주는 컴포넌트를 만들어 공유하는 방법
+```jsx
+// 1. 물의 끓음 여부를 알려주는 컴포넌트
+function BoilingVerdict(props){
+  if(props.celsius >= 100) {
+    return <p>물이 끓습니다.</p>;
+  }
+  return <p>물이 끓지 않습니다.</p>;
+}
+/* 섭씨온도 값을 props로 받아 물이 끓는다는 문자열을 출력하고 그 외에는 끓지 않는다는 문자열을 출력 */
+
+function Calculator(props){
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>섭씨 온도를 입력하세요: </legend>
+      <input
+        value={temperature}
+        onChange={handleChange} />
+      <BoilingVerdict
+        celsius={parseFloat(temperature)} />
+    </fieldset>
+  )
+}
+/* BoilingVerdict 컴포넌트를 사용하는 부모 컴포넌트 */
+
+// 2. 입력 컴포넌트추출
+const scaleNames = {
+  c: '섭씨',
+  f: '화씨'
+};
+
+function TemperatureInput(props) {
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>온도를 입력해 주세요(단위:{scaleNames[props.scale]}):</legend>
+      <input value={temperature} onChange={handleChange} />
+    </fieldset>
+  )
+}
+/* 온도를 입력받기 위한 TemperatureInput 컴포넌트 */
+/* Calculator 컴포넌트 안에 온도를 입력하는 부분을 별도의 컴포넌트로 추출 */
+function Calculator(props){
+  return (
+    <div>
+      <TemperatureInput scale="c" /> 
+      <TemperatureInput scale="f" /> 
+    </ div>
+  );
+}
+/* 추출한 컴포넌트를 사용하도록 Calculator 컴포넌트를 변경 */
+/* 총 두 개의 입력을 받을 수 있도록 되어있고, 하나는 섭씨 다른 하나는 화씨를 입력받는다
+  여기서 문제점은 사용자가 입력하는 온도값이 TemperatureInput의 state에 저장되기 때문에 섭씨와 화씨값을 따로 입력 받으면 두 개의 값이 다를 수 있습니다. 이를 해결하기 위해 값을 동기화시켜줘야 함 */
+
+
+// 3. 온도 변환 함수 작성하기
+function toCelsius(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toFahrenheit(celsius) {
+  return (celsius * 9 / 5) + 32 ;
+}
+/* 화씨를 섭씨로, 섭씨를 화씨로 변환하는 함수 */
+
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if(Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+/* 변환하는 함수를 호출하는 함수*/
+/* tryConvert() 함수는 온도 값과 변환하는 함수를 파라미터로 받아서 값을 변환시켜 리턴하는 함수
+  만약 숫자가 아는 값(isNaN)을 입력하면 empty string을 리턴하도록 예외처리 */
+
+tryConvert('abc', toCelsius) // empty string을 리턴
+tryConvert('10.22', toFahrenheit) // '50.396'을 리턴
+
+```
+
+---
 ## 9주차 (4/27)
 
 ### Chapter 08
@@ -9,8 +379,9 @@
 ### 이벤트 처리하기
 1. DOM에서 클릭 이벤트 처리
 2. React에서 클릭 이벤트 처리
-  - 차이점 1) 이벤트 이름이 카멜방식으로 바뀜 (onclidk -> onClick) <br>
-           2) 전달하려는 함수는 문자열에서 함수 그대로 전달 (activate() -> activate) 
+  - 차이점 
+    1) 이벤트 이름이 카멜방식으로 바뀜 (onclidk -> onClick) <br>
+    2) 전달하려는 함수는 문자열에서 함수 그대로 전달 (activate() -> activate) 
 - 이벤트 핸들러(Event Handler) : 이벤트가 발생했을 때 해당 이벤트를 처리하는 함수
   이벤트가 발생하는 것을 계속 듣고 있다가는 의미로 이벤트 리스너(Event Listener) 라고도 부름
 
