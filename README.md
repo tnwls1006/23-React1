@@ -2,6 +2,185 @@
 
 # 23-React1
 
+## 11주차 (5/11)
+
+### Chapter 12
+2. 하위 컴포넌트에서 State 공유하기 (10주차 이어서)
+   - 사용자로부터 온도를 입력받아서 각각 섭씨온도와 화씨온도로 표현해 주고 해당 온도에서 물이 끓는지 안 끓는지는 출력해 주는 컴포넌트를 만들어 공유하는 방법 <br>
+    (1 ~ 3은 10주차떄 함)
+```jsx
+// 1. 물의 끓음 여부를 알려주는 컴포넌트
+function BoilingVerdict(props){
+  if(props.celsius >= 100) {
+    return <p>물이 끓습니다.</p>;
+  }
+  return <p>물이 끓지 않습니다.</p>;
+}
+/* 섭씨온도 값을 props로 받아 물이 끓는다는 문자열을 출력하고 그 외에는 끓지 않는다는 문자열을 출력 */
+
+function Calculator(props){
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>섭씨 온도를 입력하세요: </legend>
+      <input
+        value={temperature}
+        onChange={handleChange} />
+      <BoilingVerdict
+        celsius={parseFloat(temperature)} />
+    </fieldset>
+  )
+}
+/* BoilingVerdict 컴포넌트를 사용하는 부모 컴포넌트 */
+
+// 2. 입력 컴포넌트추출
+const scaleNames = {
+  c: '섭씨',
+  f: '화씨'
+};
+
+function TemperatureInput(props) {
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>온도를 입력해 주세요(단위:{scaleNames[props.scale]}):</legend>
+      <input value={temperature} onChange={handleChange} />
+    </fieldset>
+  )
+}
+/* 온도를 입력받기 위한 TemperatureInput 컴포넌트 */
+/* Calculator 컴포넌트 안에 온도를 입력하는 부분을 별도의 컴포넌트로 추출 */
+function Calculator(props){
+  return (
+    <div>
+      <TemperatureInput scale="c" /> 
+      <TemperatureInput scale="f" /> 
+    </ div>
+  );
+}
+/* 추출한 컴포넌트를 사용하도록 Calculator 컴포넌트를 변경 */
+/* 총 두 개의 입력을 받을 수 있도록 되어있고, 하나는 섭씨 다른 하나는 화씨를 입력받는다
+  여기서 문제점은 사용자가 입력하는 온도값이 TemperatureInput의 state에 저장되기 때문에 섭씨와 화씨값을 따로 입력 받으면 두 개의 값이 다를 수 있습니다. 이를 해결하기 위해 값을 동기화시켜줘야 함 */
+
+
+// 3. 온도 변환 함수 작성하기
+function toCelsius(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toFahrenheit(celsius) {
+  return (celsius * 9 / 5) + 32 ;
+}
+/* 화씨를 섭씨로, 섭씨를 화씨로 변환하는 함수 */
+
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if(Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+/* 변환하는 함수를 호출하는 함수*/
+/* tryConvert() 함수는 온도 값과 변환하는 함수를 파라미터로 받아서 값을 변환시켜 리턴하는 함수
+  만약 숫자가 아는 값(isNaN)을 입력하면 empty string을 리턴하도록 예외처리 */
+
+tryConvert('abc', toCelsius) // empty string을 리턴
+tryConvert('10.22', toFahrenheit) // '50.396'을 리턴
+
+```
+( 4번부터 이어서 )
+```jsx
+ // 4. Shared State 적용하기
+ /* 하위 컴포넌트의 state를 공통된 부모 컴포넌트로 올려서 shared state를 적용해야 함
+  state를 상위 컴포넌트로 올린다는 것 : State 끌어올리기 [Lifting State Up] */
+
+ return (
+  ...
+    //변경 전 : <input value={temperature} onChange={handleChange} />
+    <input value={props.temperature} onChange={handleChange} />
+  ...
+ )
+/* 온도 값을 컴포넌트의  state에서 가져오는 것이 아닌 props를 통해 가져온다
+  컴포넌트의 state를 사용하지 않게 되기 때문에 입력값이 변경되었을 때 상위 컴포넌트로 변경된 값을 전달해 주어야 한다. 
+이를 위해 handleChange()함수를 변경해야 함 */
+const handleChange = (event) => {
+  // 변경 전 : setTemperature(event.target.value);
+  props.onTemperatureChange(event.target.value);
+}
+/* 사용자가 온도 값을 변경할 때마다 props에 있는 onTemperatureChange() 함수를 통해 변경된 온도 값이 상위 컴포넌트로 전달됨. */
+
+// 최종적으로 완성된 TemperatureInput 컴포넌트
+//    state는 제거되었고, 상위 컴포넌트에서 전달받은 값만 사용
+function TemperatureInput(props) {
+  const handleChange = (event) => {
+    props.onTemperatureChange(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend> 온도를 입력해 주세요(단위 : {scaleNames[props.scale]}) : </legend>
+      <input value={props.temperature} onChange={handleChange} />
+    </fieldset>
+  )
+}
+
+// 5. Calculator 컴포넌트 변경하기
+//    변경된 TemperatureInput 컴포넌트에 맞춰서 Calculator 컴포넌트를 변경해줘야 함
+function Calculator(props) {
+  const [temperature, setTemperature] = useState('');
+  const [scale, setScale] = useState('c');
+
+  const handleCelsiusChange = (temperature) => {
+    setTemperature(temperature);
+    setScale('c');
+  }
+
+  const handleFahrenheitChange = (temperature) => {
+    setTemperature(temperature);
+    setScale('f');
+  }
+
+  const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
+  const fahrenheit = scale === 'c' ? tryConvert(temperature, toFahrenheit) : temperature;
+
+  return (
+    <div>
+      <TemperatureInput
+        scale = "c"
+        temperature = {celsius}
+        onTemperatureChange = {handleCelsiusChange} />
+      <TemperatureInput
+        scale = "f"
+        temperature = {fahrenheit}
+        onTemperatureChange = {handleFahrenheitChange} />
+      <BoilingVerdict
+        celsius = {parseFloat(celsius)} />
+      </div>
+  );
+}
+```
+- state로 temperature와 scale을 선언하여 온도 값과 단위를 각각 저장하도록 하였다.
+- TemperatureInput 컴포넌트를 사용하는 부분에서는 각 단위로 변환된 온도 값과 단위를 props로 넣어준다
+  - 섭씨온도가 변경되면 단위가 'c'로 되고, 화씨온도가 변경되면 단위가 'f'로 변경
+
+<img src="./src/images/chapter12.jpg" width="500px" /><br>
+- 최종적으로 오나성된 구조를 그림으로 나타냈다.
+- 상위 컴포넌트인 Calculator에서 온도 값과 단위를 각각의 state로 가지고 있으며, 두 개의 하위 컴포넌트는 각각 섭씨와 화씨로 변환된 온도 값과 단위 그리고 온도를 업데이트하기 위한 함수를 props로 갖고 있다.
+
+### 3. 실습 <섭씨온도와 화씨온도 표시하기>
+
 ---
 
 ## 10주차 (5/4)
