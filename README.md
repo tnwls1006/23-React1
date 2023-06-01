@@ -2,6 +2,24 @@
 
 # 23-React1
 
+## 13주차 (5/25)
+
+### 4. Context API 5가지 설명
+< 중요하다 >
+- Create
+- Provider
+- Consumer
+
+### 5. 여러 컨텍스트 사용하기
+- 여러 개의 컨텍스트를 동시에 사용하려면 COntext.Provider를 중첩해 사용
+- Ex) 393 ~ 394 ( ThemeContext, UserContext 중첩 사용 )
+```jsx
+
+```
+- 두 개 이상의 컨텍스트 값이 자주 사용될 경우 모든 값을 한 번에 제공해 주는 별도의 render prop 컴포넌트를 직접 만드는 것을 고려하는 것도 좋다.
+
+---
+
 ## 12주차 (5/18)
 
 ### Chapter 13 합성 vs 상속
